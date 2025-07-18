@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blockly IDE</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Blockly CDN -->
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blocks.min.js"></script>
+    <script src="https://unpkg.com/blockly/javascript.min.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.min.js"></script>
+</head>
+<body>
+    <!-- Header Bar -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">🔧 My Blockly IDE</h1>
+            <span class="subtitle">Visual Programming for Everyone</span>
+        </div>
+        <div class="header-center">
+            <button id="runBtn" class="btn btn-primary">
+                <span class="btn-icon">▶</span>
+                Run Code
+            </button>
+            <button id="generateBtn" class="btn btn-secondary">
+                <span class="btn-icon">📝</span>
+                Generate
+            </button>
+        </div>
+        <div class="header-right">
+            <button id="saveBtn" class="btn btn-outline">
+                <span class="btn-icon">💾</span>
+                Save
+            </button>
+            <button id="loadBtn" class="btn btn-outline">
+                <span class="btn-icon">📁</span>
+                Load
+            </button>
+            <button id="clearBtn" class="btn btn-outline">
+                <span class="btn-icon">🗑</span>
+                Clear
+            </button>
+            <button id="themeToggle" class="btn btn-icon-only" title="Toggle Theme">
+                <span class="btn-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+        <!-- Center Workspace (Blockly will create toolbox automatically) -->
+        <section class="workspace-container">
+            <div class="workspace-header">
+                <h3>Visual Programming Workspace</h3>
+                <div class="workspace-controls">
+                    <button id="undoBtn" class="btn btn-small" title="Undo">↶</button>
+                    <button id="redoBtn" class="btn btn-small" title="Redo">↷</button>
+                    <button id="zoomInBtn" class="btn btn-small" title="Zoom In">🔍+</button>
+                    <button id="zoomOutBtn" class="btn btn-small" title="Zoom Out">🔍-</button>
+                </div>
+            </div>
+            <div id="blocklyDiv" class="blockly-workspace"></div>
+        </section>
+
+        <!-- Right Panel - Code Output -->
+        <aside class="code-panel">
+            <div class="code-header">
+                <h3>Generated Code</h3>
+                <div class="code-controls">
+                    <button id="copyCodeBtn" class="btn btn-small">📋 Copy</button>
+                    <select id="codeLanguage" class="code-language-select">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="arduino">Arduino C++</option>
+                    </select>
+                </div>
+            </div>
+            <div class="code-container">
+                <pre id="codeOutput" class="code-output">// Your generated code will appear here...</pre>
+            </div>
+            <div class="output-section">
+                <h4>Console Output</h4>
+                <div id="consoleOutput" class="console-output"></div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Status Bar -->
+    <footer class="status-bar">
+        <span id="statusText">Ready</span>
+        <span id="blockCount">Blocks: 0</span>
+        <span id="workspaceInfo">Workspace: Empty</span>
+    </footer>
+
+    <!-- Hidden Toolbox XML -->
+    <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+        <!-- Hardware Category -->
+        <category name="Hardware" colour="#FF6B35">
+            <block type="hardware_led_on">
+                <field name="PIN">13</field>
+            </block>
+            <block type="hardware_led_off">
+                <field name="PIN">13</field>
+            </block>
+            <block type="hardware_led_blink">
+                <field name="PIN">13</field>
+                <field name="DELAY">1000</field>
+            </block>
+            <block type="hardware_delay">
+                <field name="TIME">1000</field>
+            </block>
+            <block type="hardware_digital_read">
+                <field name="PIN">2</field>
+            </block>
+            <block type="hardware_digital_write">
+                <field name="PIN">13</field>
+                <field name="STATE">HIGH</field>
+            </block>
+            <block type="hardware_analog_read">
+                <field name="PIN">A0</field>
+            </block>
+            <block type="hardware_analog_write">
+                <field name="PIN">9</field>
+                <value name="VALUE">
+                    <shadow type="math_number">
+                        <field name="NUM">128</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+
+        <!-- Sensors Category -->
+        <category name="Sensors" colour="#4CAF50">
+            <block type="hardware_temperature">
+                <field name="PIN">A0</field>
+            </block>
+            <block type="hardware_ultrasonic">
+                <field name="TRIG_PIN">7</field>
+                <field name="ECHO_PIN">8</field>
+            </block>
+        </category>
+
+        <!-- Actuators Category -->
+        <category name="Actuators" colour="#E91E63">
+            <block type="hardware_servo">
+                <field name="PIN">9</field>
+                <value name="ANGLE">
+                    <shadow type="math_number">
+                        <field name="NUM">90</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="hardware_buzzer">
+                <field name="PIN">9</field>
+                <value name="FREQUENCY">
+                    <shadow type="math_number">
+                        <field name="NUM">1000</field>
+                    </shadow>
+                </value>
+                <value name="DURATION">
+                    <shadow type="math_number">
+                        <field name="NUM">500</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+
+        <!-- Communication Category -->
+        <category name="Communication" colour="#2196F3">
+            <block type="hardware_serial_print">
+                <value name="TEXT">
+                    <shadow type="text">
+                        <field name="TEXT">Hello World</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="hardware_serial_println">
+                <value name="TEXT">
+                    <shadow type="text">
+                        <field name="TEXT">Hello World</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="hardware_wifi_connect">
+                <value name="SSID">
+                    <shadow type="text">
+                        <field name="TEXT">YourWiFiName</field>
+                    </shadow>
+                </value>
+                <value name="PASSWORD">
+                    <shadow type="text">
+                        <field name="TEXT">YourPassword</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="hardware_http_get">
+                <value name="URL">
+                    <shadow type="text">
+                        <field name="TEXT">http://api.example.com/data</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+
+        <!-- Arduino Category -->
+        <category name="Arduino" colour="#00979D">
+            <block type="program_start"></block>
+            <block type="arduino_setup"></block>
+            <block type="arduino_loop"></block>
+        </category>
+
+        <!-- Utilities Category -->
+        <category name="Utilities" colour="#795548">
+            <block type="hardware_custom_function">
+                <field name="FUNCTION_NAME">myFunction</field>
+            </block>
+            <block type="hardware_comment">
+                <field name="COMMENT">Add your comment here</field>
+            </block>
+        </category>
+
+        <!-- Logic Category -->
+        <category name="Logic" colour="#5C81A6">
+            <block type="controls_if"></block>
+            <block type="logic_compare">
+                <field name="OP">EQ</field>
+            </block>
+            <block type="logic_operation">
+                <field name="OP">AND</field>
+            </block>
+            <block type="logic_negate"></block>
+            <block type="logic_boolean">
+                <field name="BOOL">TRUE</field>
+            </block>
+            <block type="logic_null"></block>
+            <block type="logic_ternary"></block>
+        </category>
+
+        <!-- Loops Category -->
+        <category name="Loops" colour="#5CA65C">
+            <block type="controls_repeat_ext">
+                <value name="TIMES">
+                    <shadow type="math_number">
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="controls_whileUntil">
+                <field name="MODE">WHILE</field>
+            </block>
+            <block type="controls_for">
+                <field name="VAR">i</field>
+                <value name="FROM">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+                <value name="TO">
+                    <shadow type="math_number">
+                        <field name="NUM">10</field>
+                    </shadow>
+                </value>
+                <value name="BY">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="controls_flow_statements">
+                <field name="FLOW">BREAK</field>
+            </block>
+        </category>
+
+        <!-- Math Category -->
+        <category name="Math" colour="#5C68A6">
+            <block type="math_number">
+                <field name="NUM">0</field>
+            </block>
+            <block type="math_arithmetic">
+                <field name="OP">ADD</field>
+                <value name="A">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+                <value name="B">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="math_single">
+                <field name="OP">ROOT</field>
+                <value name="NUM">
+                    <shadow type="math_number">
+                        <field name="NUM">9</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="math_trig">
+                <field name="OP">SIN</field>
+                <value name="NUM">
+                    <shadow type="math_number">
+                        <field name="NUM">45</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="math_constant">
+                <field name="CONSTANT">PI</field>
+            </block>
+            <block type="math_random_int">
+                <value name="FROM">
+                    <shadow type="math_number">
+                        <field name="NUM">1</field>
+                    </shadow>
+                </value>
+                <value name="TO">
+                    <shadow type="math_number">
+                        <field name="NUM">100</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+
+        <!-- Text Category -->
+        <category name="Text" colour="#5CA68D">
+            <block type="text">
+                <field name="TEXT"></field>
+            </block>
+            <block type="text_join"></block>
+            <block type="text_append">
+                <field name="VAR">item</field>
+                <value name="TEXT">
+                    <shadow type="text">
+                        <field name="TEXT"></field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="text_length">
+                <value name="VALUE">
+                    <shadow type="text">
+                        <field name="TEXT">abc</field>
+                    </shadow>
+                </value>
+            </block>
+            <block type="text_print">
+                <value name="TEXT">
+                    <shadow type="text">
+                        <field name="TEXT">abc</field>
+                    </shadow>
+                </value>
+            </block>
+        </category>
+
+        <!-- Variables Category -->
+        <category name="Variables" colour="#A55B80" custom="VARIABLE"></category>
+
+        <!-- Functions Category -->
+        <category name="Functions" colour="#9A5BA5" custom="PROCEDURE"></category>
+    </xml>
+
+    <!-- Load Scripts -->
+    <script src="blocks.js"></script>
+    <script src="generators.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
