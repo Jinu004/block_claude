@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Blockly IDE</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Blockly CDN -->
-    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
-    <script src="https://unpkg.com/blockly/blocks.min.js"></script>
-    <script src="https://unpkg.com/blockly/javascript.min.js"></script>
-    <script src="https://unpkg.com/blockly/msg/en.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Blockly IDE</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Blockly Core -->
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  <script src="https://unpkg.com/blockly/blocks.min.js"></script>
+  <script src="https://unpkg.com/blockly/javascript.min.js"></script>
+  <script src="https://unpkg.com/blockly/msg/en.min.js"></script>
+
+  <!-- 🔧 Arduino Generator (must have for Blockly.Arduino) -->
+  <script src="https://unpkg.com/blockly-arduino@latest/dist/arduino_compressed.js"></script>
+
+  <!-- 🐍 Python Generator (must have for Blockly.Python) -->
+  <script src="https://unpkg.com/blockly/python.js"></script>
 </head>
+
 <body>
     <!-- Header Bar -->
     <header class="header">
@@ -28,6 +36,15 @@
                 Generate
             </button>
         </div>
+            <div style="margin-top: 20px;">
+  <label for="board">Select Board:</label>
+  <select id="board">
+    <option value="arduino:avr:uno">Arduino Uno</option>
+    <option value="esp32:esp32:esp32">ESP32</option>
+  </select>
+
+  <button id="compile">Compile & Download</button>
+</div>
         <div class="header-right">
             <button id="saveBtn" class="btn btn-outline">
                 <span class="btn-icon">💾</span>
@@ -45,6 +62,9 @@
                 <span class="btn-icon">🌙</span>
             </button>
         </div>
+
+    
+
     </header>
 
     <!-- Main Content Area -->
@@ -83,6 +103,8 @@
                 <h4>Console Output</h4>
                 <div id="consoleOutput" class="console-output"></div>
             </div>
+
+
         </aside>
     </main>
 
@@ -363,6 +385,7 @@
     <!-- Load Scripts -->
     <script src="blocks.js"></script>
     <script src="generators.js"></script>
+    
     <script src="main.js"></script>
 </body>
 </html>

@@ -448,3 +448,29 @@ PythonGenerator.blockToCode = function(block, generator) {
     
     return '';
 };
+
+Blockly.Arduino = {
+  workspaceToCode: function(workspace) {
+    const topBlocks = workspace.getTopBlocks(true);
+    let code = '';
+
+    for (const block of topBlocks) {
+      code += ArduinoGenerator.blockToCode(block, ArduinoGenerator);
+    }
+
+    return code;
+  }
+};
+
+Blockly.Python = {
+  workspaceToCode: function(workspace) {
+    const topBlocks = workspace.getTopBlocks(true);
+    let code = '';
+
+    for (const block of topBlocks) {
+      code += PythonGenerator.blockToCode(block, PythonGenerator);
+    }
+
+    return code;
+  }
+};

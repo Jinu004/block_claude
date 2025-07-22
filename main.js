@@ -838,3 +838,70 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+
+// ===== Backend Compilation Trigger =====
+document.getElementById('compile').addEventListener('click', async () => {
+  const selectedLanguage = document.getElementById("codeLanguage").value;
+  const board = document.getElementById("board").value;
+
+  let code = "";
+  if (selectedLanguage === "arduino") {
+    code = Blockly.Arduino.workspaceToCode(workspace);
+  } else if (selectedLanguage === "python") {
+    code = Blockly.Python.workspaceToCode(workspace);
+  } else {
+    alert("⚠️ Please select Arduino or Python to compile.");
+    return;
+  }
+
+  if (!code.trim()) {
+    alert("⚠️ No code generated from blocks.");
+    return;
+  }
+
+  // Show compile status
+  logToConsole("⏳ Compiling...", "info");
+
+  const file = new File([code], "sketch.ino", { type: "text/plain" });
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("board", board);
+
+  try {
+    const response = await fetch("http://localhost:8000/compile/arduino", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      logToConsole("❌ Compilation failed:\n" + err.error, "error");
+      return;
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const filename = board.includes("esp32") ? "firmware.bin" : "firmware.hex";
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+
+    logToConsole("✅ Compilation successful! Firmware downloaded.", "success");
+  } catch (err) {
+    logToConsole("❌ Error: " + err.message, "error");
+  }
+});
+
+// ===== Console Logger =====
+function logToConsole(message, type = "info") {
+  const consoleEl = document.getElementById("consoleOutput");
+
+  const msgEl = document.createElement("div");
+  msgEl.className = `console-message ${type}`;
+  msgEl.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+  consoleEl.appendChild(msgEl);
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+}
